@@ -1,0 +1,18 @@
+#!/bin/zsh
+TARGET_DIR="$HOME/Desktop/Oblique Strategies/in"
+WALLPAPER="$HOME/Dropbox/Fotos/Wallpapers/Oblique.jpg"
+touch -t $(date +%Y%m%d0000) $TARGET_DIR/midnight
+TODAYS=`find $TARGET_DIR -type f -newer $TARGET_DIR/midnight`
+if [ -z "$TODAYS" ]
+then
+	echo "------ Time for your Oblique Strategie of the day! ------"
+	PINNED_ID=`curl -sL https://twitter.com/dark_shark|grep -A5 "user-pinned"|grep "permalink"|grep -Eo "[0-9]{1,}"`
+#	echo $PINNED_ID
+	IMAGE_URL=`curl -sL https://twitter.com/dark_shark/status/$PINNED_ID|grep "data-image-url"|grep -o "http.*\.jpg"|head -1`
+#	echo $IMAGE_URL
+	curl -sO $IMAGE_URL
+	IMAGE_NAME=`echo $IMAGE_URL|grep -o "[^/]*$"`
+	cp "$IMAGE_NAME" "$WALLPAPER"
+	mv "$IMAGE_NAME" "$TARGET_DIR/$IMAGE_NAME"
+	open "$TARGET_DIR/$IMAGE_NAME"
+fi
