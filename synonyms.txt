@@ -1,0 +1,131 @@
+## snippets
+
+PUT /synonym_test
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "synonym_analyzer": {
+            "tokenizer": "whitespace",
+            "filter": ["my_synonyms"]
+          }
+        },
+        "filter": {
+          "my_synonyms": {
+            "type": "synonym",
+            "synonyms_path": "my_synonyms.txt",
+            "updateable": true
+          }
+        }
+      }
+    }
+  }
+}
+
+## ----------------------------------
+
+GET /synonym_test/_analyze
+{
+  "analyzer": "synonym_analyzer",
+  "text": "cosmos"
+}
+
+## ----------------------------------
+
+{
+  [...],
+  "reload_details": [{
+    "index": "synonym_test",
+    "reloaded_analyzers": ["synonym_analyzer"],
+    "reloaded_node_ids": ["FXbmbgG_SsOrNRssrYcPow"]
+  }]
+}
+
+## ----------------------------------
+
+POST /synonym_test/_mapping
+{
+  "properties": {
+    "text_field": {
+      "type": "text",
+      "analyzer": "standard",
+      "search_analyzer": "synonym_analyzer"
+    }
+  }
+}
+
+## ----------------------------------
+
+PUT /test_index
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "synonym_analyzer": {
+            "tokenizer": "whitespace",
+            "filter": ["lowercase", "my_synonyms"]
+          }
+        },
+        "filter": {
+          "my_synonyms": {
+            "type": "synonym",
+            "synonyms": ["Eins, Uno, One", "Cosmos => Universe"]
+          }
+        }
+      }
+    }
+  }
+}
+
+GET /test_index/_analyze
+{
+  "analyzer": "synonym_analyzer",
+  "text": "one"
+}
+
+## ------------------
+
+GET /test_index/_analyze
+{
+  "analyzer": "synonym_analyzer",
+  "text": "cosmos"
+}
+
+## ------------------
+
+PUT /synonym_chaining
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "filter": {
+          "first_synonyms": {
+            "type": "synonym",
+            "synonyms": ["a => b", "e => f"]
+          },
+          "second_synonyms": {
+            "type": "synonym",
+            "synonyms": ["b => c", "d => e"]
+          }
+        },
+        "analyzer": {
+          "synonym_analyzer": {
+            "filter": [
+              "first_synonyms",
+              "second_synonyms"
+            ],
+            "tokenizer": "whitespace"
+          }
+        }
+      }
+    }
+  }
+}
+
+GET /synonym_chaining/_analyze
+{
+  "analyzer": "synonym_analyzer",
+  "text": "a"
+}
