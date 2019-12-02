@@ -1,0 +1,13 @@
+#!/bin/bash
+rg "@Awaits"|grep -oE "http(s):[^[:digit:]]*[[:digit:]]*"|sort|uniq > orphans
+# change to master and update
+git checkout master
+git pull origin master
+# grep each line on master
+while read line; do
+    # echo "grepping for ${line}"
+    outline=$(rg --glob '!orphans' ${line} .) 
+    if [[ -z $outline ]]; then
+        echo "no match found for: $line"
+    fi
+done <orphans
