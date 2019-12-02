@@ -8,9 +8,9 @@ then
 	echo "------ Time for your Oblique Strategie of the day! ------"
 	#PINNED_ID=`curl -sL https://twitter.com/dark_shark|grep -A5 "user-pinned"|grep "permalink"|grep -Eo "[0-9]{1,}"`
 	PINNED_ID=`curl -sL https://twitter.com/dark_shark|grep "Oblique Strategy"|grep -o "https://t.co[^\"]*"`
-	echo $PINNED_ID
+	# echo $PINNED_ID
 	IMAGE_URL=`curl -sL $PINNED_ID|grep "data-image-url"|grep -o "http.*\.jpg"|head -1`
-	echo $IMAGE_URL
+	# echo $IMAGE_URL
 	curl -sO $IMAGE_URL
 	IMAGE_NAME=`echo $IMAGE_URL|grep -o "[^/]*$"`
 	cp "$IMAGE_NAME" "$WALLPAPER"
